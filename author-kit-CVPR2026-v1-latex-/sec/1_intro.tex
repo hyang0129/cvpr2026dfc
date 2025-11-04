@@ -1,202 +1,25 @@
 \section{Introduction}
 \label{sec:intro}
 
-Please follow the steps outlined below when submitting your manuscript to the IEEE Computer Society Press.
-This style guide now has several important modifications (for example, you are no longer warned against the use of sticky tape to attach your artwork to the paper), so all authors should read this new version.
+The deployment of deep neural networks (DNNs) in safety-critical domains -- such as autonomous driving \citep{ramanagopal2018failing}, biometric authentication \citep{wang2021deep}, and medical diagnostics \citep{bakator2018deep} -- has spurred growing interest in ensuring their reliability. In these contexts, the traditional closed-world assumption \citep{krizhevsky2012imagenet}, where training and test data are drawn i.i.d. from the same in-distribution (ID), is no longer valid. Instead, models must operate under open-world conditions \citep{drummond2006open}, where inputs encountered at test time may stem from entirely different, out-of-distribution (OOD) sources. This reality necessitates robust OOD detection methods, which aim to flag inputs whose labels were not seen during training. The rationale is straightforward: we must prevent high-stakes systems from acting on predictions that are inherently invalid due to unseen or unfamiliar inputs.
 
-%-------------------------------------------------------------------------
-\subsection{Language}
+Many state-of-the-art OOD detection methods demonstrate strong performance across established benchmarks \citep{zhang2023openood}. However, these benchmarks almost exclusively use in-distribution sets that contain samples and classes from a wide variety of domains, such as \citep{zhang2023openood}, which explicitly emphasize performance on CIFAR10/100 \citep{cifar10} and ImageNet \citep{deng2009imagenet}. While this approach provides a broad testbed for evaluating OOD robustness, it implicitly biases models and methods toward handling multi-domain in-distribution settings. As a result, there exists a gap in the literature: current OOD detection techniques are largely tailored to scenarios where the ID data is inherently diverse, rather than narrow or homogeneous. This raises concern as to how well these methods generalize to real-world applications where ID data may come from a single domain or task-specific distribution.
 
-All manuscripts must be in English.
+The single domain setting is understudied in bleeding edge OOD detection research, yet it has been heavily studied in the application of OOD methods for downstream tasks. Single-domain OOD detection is particularly important in application areas such as medical imaging \citep{zhang2021out}, satellite imagery \citep{ekim2024distribution}, and agriculture \citep{saadati2024out}, where models are often deployed in narrowly scoped environments with highly consistent data characteristics. This creates a domain mismatch between the theoretical efforts of the best OOD detection researchers and the practitioners who would benefit greatly from their research.
 
-\subsection{Dual submission}
+Surprisingly, there is a fatal flaw in OOD detection that only occurs in single domain settings. This paper introduces the concept of and theoretically proves the existence of \textbf{domain feature collapse}. Through information theory and bottleneck compression, we show that artificial neural networks will remove domain specific features from their learned representations, under the single domain setting. This leads to a situation where OOD detection relies solely on class-specific features, while ignoring domain-specific features (e.g., knowing that an image is an X-ray does not help in detecting the disease depicted by the X-ray, but would help in OOD detection). Unfortunately, this failure results in higher OOD detection error rates when the ID set is single domain versus multi-domain. Since this mode of OOD detection failure rarely occurs for multi-domain ID sets, it is difficult to identify in the commonly used OOD benchmarks.
 
-Please refer to the author guidelines on the \confName\ \confYear\ web page for a
-discussion of the policy on dual submissions.
+To address the issue of domain feature collapse, we introduce a new benchmark to evaluate the performance of OOD detection algorithms in the single domain setting. This benchmark covers data from a wide variety of singular domains, including medical imaging, agriculture, satellite imagery, and more. We also propose a simple but effective solution to domain feature collapse, a two stage domain filtering process. Our theory suggests that it is absolutely necessary to address the issue of domain feature collapse in order to ensure safe OOD detection in single domain settings.
 
-\subsection{Paper length}
-Papers, excluding the references section, must be no longer than eight pages in length.
-The references section will not be included in the page count, and there is no limit on the length of the references section.
-For example, a paper of eight pages with two pages of references would have a total length of 10 pages.
-{\bf There will be no extra page charges for \confName\ \confYear.}
+Our key contributions are as follows:
+\begin{itemize}
+\item \textbf{Domain Feature Collapse}: Through bottleneck compression, we prove that training on a single domain results in a learned representation that contains no discriminative information regarding that particular domain, as this domain would be independent of the class within the context of the training dataset. We label this behavior as domain feature collapse, where a class label-supervised model will only learn class features and ignore domain features.
 
-Overlength papers will simply not be reviewed.
-This includes papers where margins and formatting are deemed to have been significantly altered from those laid down by this style guide.
-Note that this \LaTeX\ guide already sets the figure captions and references in a smaller font.
-The reason why such papers will not be reviewed is that there is no provision for supervised revisions of manuscripts.
-The review process cannot determine the suitability of the paper for presentation in eight pages if it is reviewed in 11 pages.
+\item \textbf{Domain Filtering}: We introduce a simple and consistent solution to the problem of domain feature collapse that allows any existing OOD detection algorithm to maintain high performance for both in-domain and out-of-domain OOD detection.
 
-%-------------------------------------------------------------------------
-\subsection{The ruler}
-The \LaTeX\ style defines a printed ruler that should be present in the version submitted for review.
-The ruler is provided in order that reviewers may comment on particular lines in the paper without circumlocution.
-If you are preparing a document using a non-\LaTeX\ document preparation system, arrange for an equivalent ruler to appear on the final output pages.
-The presence or absence of the ruler should not change the appearance of any other content on the page.
-The camera-ready copy should not contain a ruler.
-(\LaTeX\ users may use the options of \texttt{cvpr.sty} to switch between different versions.)
+\item \textbf{Domain Bench}: We introduce multiple single-domain datasets to provide empirical evidence of domain feature collapse across a wide variety of domains. We release source code to run these benchmarks following the OpenOOD framework \citep{zhang2023openood} in order to improve future research in single domain settings \footnote{see supplementary material for anonymized repository}.
 
-Reviewers:
-note that the ruler measurements do not align well with lines in the paper --- this turns out to be very difficult to do well when the paper contains many figures and equations, and, when done, looks ugly.
-Use fractional references (\eg, this line is $087.5$), although in most cases the approximate location would be adequate.
+%\footnote{https://anonymous.4open.science/r/DFC-6C35/README.md}
 
 
-\subsection{Paper ID}
-Make sure that the Paper ID from the submission system is visible in the version submitted for review (replacing the ``*****'' you see in this document).
-If you are using the \LaTeX\ template, \textbf{make sure to update paper ID in the appropriate place in the tex file}.
-
-
-\subsection{Mathematics}
-
-Please, number all of your sections and displayed equations as in these examples:
-\begin{equation}
-  E = m\cdot c^2
-  \label{eq:important}
-\end{equation}
-and
-\begin{equation}
-  v = a\cdot t.
-  \label{eq:also-important}
-\end{equation}
-It is important for the reader to be able to refer to any particular equation.
-Just because you did not refer to it in the text does not mean that some future reader might not need to refer to it.
-It is cumbersome to have to use circumlocutions like ``the equation second from the top of page 3 column 1''.
-(Note that the ruler will not be present in the final copy, so is not an alternative to equation numbers).
-All authors will benefit from reading Mermin's description of how to write mathematics:
-\url{http://www.pamitc.org/documents/mermin.pdf}.
-
-\subsection{Blind review}
-
-Many authors misunderstand the concept of anonymizing for blind review.
-Blind review does not mean that one must remove citations to one's own work---in fact it is often impossible to review a paper unless the previous citations are known and available.
-
-Blind review means that you do not use the words ``my'' or ``our'' when citing previous work.
-That is all.
-(But see below for tech reports.)
-
-Saying ``this builds on the work of Lucy Smith [1]'' does not mean that you are Lucy Smith;
-it says that you are building on her work.
-If you are Smith and Jones, do not say ``as we show in [7]'', say ``as Smith and Jones show in [7]'' and at the end of the paper, include reference 7 as you would any other cited work.
-
-An example of a bad paper just asking to be rejected:
-\begin{quote}
-\begin{center}
-    An analysis of the frobnicatable foo filter.
-\end{center}
-
-   In this paper, we present a performance analysis of our previous paper [1], and show that it is inferior to all previously known methods.
-   Why the previous paper was accepted without this analysis is beyond me.
-
-   [1] Removed for blind review
-\end{quote}
-
-
-An example of an acceptable paper:
-\begin{quote}
-\begin{center}
-     An analysis of the frobnicatable foo filter.
-\end{center}
-
-   In this paper, we present a performance analysis of the paper of Smith \etal [1], and show it to be inferior to all previously known methods.
-   Why the previous paper was accepted without this analysis is beyond me.
-
-   [1] Smith, L and Jones, C. ``The frobnicatable foo filter, a fundamental contribution to human knowledge''. Nature 381(12), 1-213.
-\end{quote}
-
-If you are making a submission to another conference at the same time that covers similar or overlapping material, you may need to refer to that submission to explain the differences, just as you would if you had previously published related work.
-In such cases, include the anonymized parallel submission~\cite{Authors14} as supplemental material and cite it as
-\begin{quote}
-[1] Authors. ``The frobnicatable foo filter'', F\&G 2014 Submission ID 324, Supplied as supplemental material {\tt fg324.pdf}.
-\end{quote}
-
-Finally, you may feel you need to tell the reader that more details can be found elsewhere and refer them to a technical report.
-For conference submissions, the paper must stand on its own, and not {\em require} the reviewer to go to a tech report for further details.
-Thus, you may say in the body of the paper ``further details may be found in~\cite{Authors14b}''.
-Then submit the tech report as supplemental material.
-Again, do not assume that the reviewers will read this material.
-
-Sometimes your paper is about a problem that you tested using a tool that is widely known to be restricted to a single institution.
-For example, let's say it's 1969, you have solved a key problem on the Apollo lander, and you believe that the 1970 audience would like to hear about your
-solution.
-The work is a development of your celebrated 1968 paper entitled ``Zero-g frobnication: How being the only people in the world with access to the Apollo lander source code makes us a wow at parties'', by Zeus \etal.
-
-You can handle this paper like any other.
-Do not write ``We show how to improve our previous work [Anonymous, 1968].
-This time we tested the algorithm on a lunar lander [name of lander removed for blind review]''.
-That would be silly, and would immediately identify the authors.
-Instead write the following:
-\begin{quotation}
-\noindent
-   We describe a system for zero-g frobnication.
-   This system is new because it handles the following cases:
-   A, B.  Previous systems [Zeus et al. 1968] did not  handle case B properly.
-   Ours handles it by including a foo term in the bar integral.
-
-   ...
-
-   The proposed system was integrated with the Apollo lunar lander, and went all the way to the moon, don't you know.
-   It displayed the following behaviours, which show how well we solved cases A and B: ...
-\end{quotation}
-As you can see, the above text follows standard scientific convention, reads better than the first version, and does not explicitly name you as the authors.
-A reviewer might think that it is likely that the new article was written by Zeus \etal, but cannot make any decision based on that guess.
-He or she would have to be sure that no other authors could have been contracted to solve problem B.
-\medskip
-
-\noindent
-FAQ\medskip\\
-{\bf Q:} Are acknowledgements OK?\\
-{\bf A:} No.  Leave them for the final copy.\medskip\\
-{\bf Q:} How do I cite my results reported in open challenges?
-{\bf A:} To conform with the double-blind review policy, you can report results of other challenge participants together with your results in your paper.
-However, for your results, you should not identify yourself and should not mention your participation in the challenge.
-Instead, present your results referring to the method proposed in your paper and draw conclusions based on the experimental comparison with other results.\medskip\\
-
-\begin{figure}[t]
-  \centering
-  \fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
-   %\includegraphics[width=0.8\linewidth]{egfigure.eps}
-
-   \caption{Example of caption.
-   It is set in Roman so that mathematics (always set in Roman: $B \sin A = A \sin B$) may be included without an ugly clash.}
-   \label{fig:onecol}
-\end{figure}
-
-\subsection{Miscellaneous}
-
-\noindent
-Compare the following:\\
-\begin{tabular}{ll}
- \verb'$conf_a$' &  $conf_a$ \\
- \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
-\end{tabular}\\
-See The \TeX book, p165.
-
-The space after \eg, meaning ``for example'', should not be a sentence-ending space.
-So \eg is correct, {\em e.g.} is not.
-The provided \verb'\eg' macro takes care of this.
-
-When citing a multi-author paper, you may save space by using ``et alia'', shortened to ``\etal'' (not ``{\em et.\ al.}'' as ``{\em et}'' is a complete word).
-If you use the \verb'\etal' macro provided, then you need not worry about double periods when used at the end of a sentence as in Alpher \etal.
-However, use it only when there are three or more authors.
-Thus, the following is correct:
-   ``Frobnication has been trendy lately.
-   It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
-   Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
-
-This is incorrect: ``... subsequently developed by Alpher \etal~\cite{Alpher03} ...'' because reference~\cite{Alpher03} has only two authors.
-
-\begin{figure*}
-  \centering
-  \begin{subfigure}{0.68\linewidth}
-    \fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
-    \caption{An example of a subfigure.}
-    \label{fig:short-a}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.28\linewidth}
-    \fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
-    \caption{Another example of a subfigure.}
-    \label{fig:short-b}
-  \end{subfigure}
-  \caption{Example of a short caption, which should be centered.}
-  \label{fig:short}
-\end{figure*}
+\end{itemize}

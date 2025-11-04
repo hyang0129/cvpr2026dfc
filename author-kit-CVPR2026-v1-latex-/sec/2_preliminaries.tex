@@ -1,0 +1,34 @@
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+\subsection{Out-of-Distribution Detection}
+\label{sec:ood_detection}
+
+The task of out-of-distribution detection is to identify a semantic shift in the data \citep{yang2021generalized}. This is determining when no predicted label could match the true label $\rvy \notin \sY_{in}$, where $\sY_{in}$ represents the set of in-distribution training labels. In this case, we would consider the semantic space of the sample and the training distribution to be different; this represents a semantic shift. We can then express the probability that a sample is out-of-distribution as $P(\rvy \notin \sY_{in} | \rvx)$. \textcolor{black}{One baseline method to calculate $P(\rvy \notin \sY_{in} | \rvx)$ is to take $1 - \texttt{MSP}(\rvx)$, where $\texttt{MSP}$ is the maximum softmax probability extracted from a classifier for a particular datapoint.}
+
+Furthermore, we are only concerned with labels that can be generated using only $\rvx$, via function $f$ which depends solely on $\rvx$ and no other information. Note that $f_\rvy$ may represent human labelers that generate $\rvy$. If we consider $\sY_{all}$ as the set of all possible labels that can be generated from $f_\rvy(\rvx \in \sX_{all})$, a subset of $\sX_{all}$ considered as $\sX_{training}$ may not contain all labels in $\sY_{all}$. For real world datasets, it is possible that $\sY_{in} \subsetneq \sY_{all}$.
+
+\subsection{Representation Learning and Bottleneck Compression}
+\label{sec:replearning_bottleneck}
+
+In Apendix \ref{properties}, we briefly review the information-theoretic properties used in this work.
+
+Representation learning can be formulated as finding a distribution $p(\rvz|\rvx)$ that maps the observations from $\vx \in \sX$ to $\vz \in \sZ$, while capturing relevant information for some primary task. When $\rvy$ represents some primary task, we consider only $\rvz$ that is sufficiently discriminative for accomplishing the task $\rvy$. For simplicity, we consider $\rvy$ as a classification label, but $\rvy$ can represent any objective or task. \cite{federici2020learning} show that this sufficiency is met when the information relevant for predicting $\rvy$ is unchanged when encoding $\rvx \rightarrow \rvz$. 
+
+\begin{definition}
+    \emph{Sufficiency}: A representation $\rvz \text { of } \rvx$ is sufficient for $\rvy$ if and only if $I(\rvx ; \rvy \mid \rvz)=0 $.
+    \label{definesuff}
+    %\vspace{-2mm}
+\end{definition}
+Since there exists the sufficient statistic $\rvx=\rvz$, we must consider the minimal sufficient statistic which conveys only relevant information for predicting $\rvy$. A supervised learning algorithm will seek the minimal sufficient statistic via the information bottleneck framework \citep{tishby2015deep}, under idealized conditions. 
+
+\begin{definition}
+\emph{Minimal Sufficient Statistic}. A sufficient statistic $\rvz$ is minimal if, for any other sufficient statistic $\rvs$, there exists a function $f$ such that $\rvz = f(\rvs)$.
+\label{defineminsuff}
+\end{definition}
+Information bottleneck optimization can be expressed as the minimization of the representation's complexity via $I(\rvx;\rvz)$ while maximizing its utility $I(\rvz;\rvy)$. This results in the information theoretic loss function below, where $\beta$ is a trade-off between complexity and utility \citep{shwartz2023compress}. We can consider a supervised algorithm's loss function as a variation of the following function:
+\begin{align}
+\mathcal{L}=I(\rvx ; \rvz)-\beta I(\rvz ;\rvy).
+\end{align}
+While real world conditions may not enforce the minimal sufficient statistic, e.g., overparameterization and lack of regularization, there still always exists some degree of compression such that $I(\rvx ; \rvz)<H(\rx)$ \citep{shwartz2017opening}. 
+

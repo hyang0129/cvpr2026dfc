@@ -1,0 +1,84 @@
+\section{Methodology}
+\label{sec:method}
+
+\subsection{Dataset Domain and Domain Features}
+
+We define the dataset's domain $\rvd$ as a value generated from some domain labeling function $f_{\rvd}(\rvx)$. For the purposes of this paper, we are primarily concerned with cases where the data comes from a single domain $\rvd_1$, such that $\forall \rvx \in  \{f_{\rvy}(\rvx) \in  \sY_{in}\}, f_{\rvd}(\rvx) = \rvd_1$. In these situations, we can conclude that $\forall \rvx \in \{f_{\rvd}(\rvx) \neq \rvd_1\}, f_{\rvy}(\rvx) \notin \sY_{in}$, since any data outside of the domain cannot possibly have an in-distribution label. 
+%This implies that any subset of features of $\rvx$ that is sufficient for the labeling function $f_\rvy$ is also sufficient for $f_\rvd$. 
+For this paper, we define domain features $\rvx_\rvd$ such that they do not overlap with class features $\rvx_\rvy$, implying $I(\rvx_\rvd:\rvx_\rvy) = 0$. The independence of domain and class features only applies to the training set, as domain features would provide useful information in the context of $\sX_{all}$. Note that this also implies that $\neg(\forall\rvx,  f_\rvy(\rvx_\rvy) = f_\rvy(\rvx))$ and $\forall\rvx, f_\rvy(\rvx_\rvy, \rvx_\rvd) = f_\rvy(\rvx)$. For both domain and class features, we refer to the minimal set of features, as per definition \ref{defineminsuff}. 
+
+\begin{definition}
+\emph{Domain Features}. Given a dataset with domain $\rvd$ determined by the labeling function $f_{\rvd}(\rvx)$, we define the domain features $\rvx_\rvd$ as the minimal subset of features of $\rvx$ that is sufficient for $f_{\rvd}$, under the constraint that $\rvx_\rvd$ is independent of the minimal sufficient class features $\rvx_\rvy$, i.e., $I(\rvx_\rvd : \rvx_\rvy) = 0$. 
+\label{definedomainfeatures}
+\end{definition}
+
+Examples of single domain datasets could include a medical chest X-ray dataset \citep{yang2023medmnist}, a geology dataset \citep{rock_data}, or a satellite imagery dataset \citep{helber2019eurosat}. Further note that domains exist in a hierarchy; for instance, the domain of cats is a subdomain of mammals which is itself a subdomain of animals. This means that there is a domain that includes all things, but such a domain would have $\{\rvx_\rvd\} = \emptyset$. For a wide domain with a wide variety of classes, we expect fewer domain features and more class features. 
+
+There exist datasets that could be labeled as a single domain $\rvd_1$ yet contain $|\{\rvx_\rvd\}| \approx 0$. For example, if one were to treat ImageNet as a single domain, the set of domain features that do not overlap with class features is likely to be zero or nearly zero. We refer to such datasets as multi-domain datasets, as their diversity of classes require multiple domains. 
+
+\subsection{Domain Feature Collapse}
+
+This section theoretically proves that any supervised model under a label-based training objective will learn a representation that contains no information on domain features, such that $I(\rvx_\rvd, \rvz) = 0$, if full bottleneck compression occurs. This is considered to be strict domain feature collapse and relies on full information bottleneck compression: 
+\begin{theorem} \textcolor{black}{Strict} Domain Feature Collapse in the Minimal Sufficient Statistic. \\
+    Let $\rvx$ come from a distribution. $\rvx$ is composed of two independent variables $\rvx_\rvd$ and $\rvx_\rvy$, where $\rvx_\rvd$ is a set of domain features as per definition \ref{definedomainfeatures}. Let $\rvd$ be a domain label generated from $f_\rvd(\rvx_\rvd) = \rvd_1$, where $\rvd_1$ is a constant value for all $\rvx$. Let $\rvy$ be a class label generated from $f_\rvy(\rvx_\rvd, \rvx_\rvy) = \rvy$. Let $\rvz$ be any sufficient representation of $\rvx$ for $\rvy$ that satisfies the sufficiency definition \ref{definesuff} and minimizes the loss function $\mathcal{L} = I(\rvx_\rvd \rvx_\rvy; \rvz) - \beta I(\rvz;\rvy)$. The possible $\rvz$ that minimizes $\mathcal{L}$ and is sufficient must meet the condition $I(\rvx_\rvd; \rvz) = 0$. 
+
+
+
+    \label{mainbodygenloss}
+\end{theorem}
+
+    Detailed proof is given in Appendix \ref{genloss}. Intuitively, the minimal sufficient representation cannot encode any information independent of the learning objective, otherwise it would not be minimal. Due to the definition \ref{definedomainfeatures} of $\rvx_\rvd$ as domain features independent of class features, it is clear that compression results in the loss of domain features in the learned representation. This is contrary to the desired outcome, which is to learn $\hat{\rvy} = g(\rvx_\rvd, \rvx_\rvy)$, as this would match the labeling function $\rvy = f_\rvy(\rvx_\rvd, \rvx_\rvy)$. Instead, the model learns $\hat{\rvy} = g(\rvx_\rvy)$ because the domain features $\rvx_\rvd$ are not predictive of the class in the context of the training data. 
+
+The lack of domain features is not problematic for safety purposes when $\forall \rvx \in \sX_{all}, H(\rvd|\rvx_\rvy) = 0$; it is safe when all out-of-domain data points contain no in-distribution class features.  However, this is difficult to guarantee in an open world setting, as we do not possess information on the OOD distribution. For example, a model might learn that a Tyrannosaurus rex is a dinosaur that stands on two feet and proceed to classify ``Barney'' (a purple dinosaur character from a children's TV show) as a dinosaur, ignoring the fact that it is purple.
+
+This issue can be further complicated by model overfitting, where a model may learn only a subset of $\rvx_\rvy$ as opposed to the full set of features intended by the practitioner. Suppose we have a bird dataset made up of blue jays and cardinals. A model may only learn that blue jays are blue and assume that any blue object is a blue jay. Such a model would be safer if it could determine the domain of the blue object as a bird, before assuming it is a blue jay.  
+
+It should also be noted that full information bottleneck compression may not occur in real world scenarios, yet we can expect that some level of compression would still occur, as suggested by \cite{tishby2015deep}. In such cases, we can use Fano's Inequality to extend our theory of strict domain feature collapse onto partial compression cases. By Fano's Inequality, we would expect to observe unsafe and unreliable OOD detection conditions even with small $I(\rvx_\rvd; \rvz)$. 
+
+\textcolor{black}{
+\begin{theorem}
+Fano's Inequality (See \citep{robert1952fano}). \\Let $\rvy$ be a discrete random variable representing the true label with $\mathcal{Y} $ possible values and cardinality of $|\mathcal{Y}| $ and $\rvx$ be a random variable used to predict $\rvy$. Let $e$ be the occurrence of an error such that $\rvy \neq \hat{ \rvy}$ where $\hat{ \rvy} = f(\rvx)$. Let $H_b$ represent the binary entropy function such that $H_b(e)=-P(e) \log P(e)-(1-P(e)) \log (1-P(e))$. The lower bound for $P(e)$ increases with lower mutual information $I(\rvx;\rvy)$. 
+\begin{align}
+H_b(e) + P(e) \log(| \mathcal{Y} |-1) \geq H(\rvy) - I(\rvx; \rvy).
+\end{align}
+\label{fano}
+\end{theorem}}
+
+In summary, the critical safety risk in domain feature collapse is the existence of out-of-domain data that contains in-distribution features. This problem occurs when training with a class label-based learning objective combined with in ID data that consists of a single domain. This safety gap is under-studied in existing literature as current benchmarks use multi-domain datasets (e.g., CIFAR10/100 or ImageNet) as the in-distribution set, minimizing the amount of domain features $\rvx_\rvd$ that are independent of the class features $\rvx_\rvy$. 
+
+\subsection{Limitations of Current Solutions}
+
+\paragraph{Fine Tuning.} The use of fine tuning pretrained models is well-studied in OOD detection. Methods such as Energy \citep{liu2020energy} and MOS \cite{huang2021mos} utilize pretrained models to fine tune on ID data. However, fine tuning may not prevent domain feature collapse due to catastrophic forgetting \cite{mccloskey1989catastrophic}, where the original pretrained weights are forgotten. 
+
+\paragraph{Pretrained Models.} The use of pretrained models is also well-studied in OOD detection. Recent methods \cite{esmaeilpour2022zero} focus on zero-shot OOD using large artificial neural networks, such as CLIP \cite{radford2021learning}. However, work by \cite{yangcan} demonstrates that relying on zero-shot pretrained models for OOD detection is not effective for narrow domain data through the adjacent OOD detection benchmark. This benchmark considers the impact of out-of-distribution data that is of the same domain, e.g., a new type of disease, and is particularly difficult for pretrained models. \cite{yangcan} attributes this to a lack of relevant class features in the pretrained model due to the significant difference in the domain of the pretraining data and the ID data. In our experiments, we show that pretrained models struggle with the adjacent OOD benchmark when the in-distribution domain is narrow.
+
+\paragraph{Self Supervised / Unsupervised / Unlabeled OOD Detection.} Unlabeled OOD methods may address the issue of domain feature collapse by adding an information term to the loss function that explicitly encodes for $I(\rvx_\rvd:\rvz) > 0$. These methods generally do not use labels and may use autoencoders \cite{zhou2022rethinking}, contrastive learning \cite{sehwag2021ssd}, or diffusion models \cite{liu2023unsupervised}. However, such methods may require adaptation to the target domain in order to properly capture relevant features. Furthermore, work by \cite{yangcan} has shown that these methods suffer similar issues as pretrained methods in the adjacent OOD detection benchmark, due to a lack of class features.
+
+\paragraph{Auxiliary Loss Functions.} Many of the unlabeled OOD methods explicitly optimize a learning objective that is not generated from the class labels. This can result in a situation where the learning objective may be closely aligned with the domain features needed to avoid domain feature collapse. However, the alignment of the auxiliary loss function and domain features is domain specific and would not generalize across different domains. This because the loss function learns domain features specific to domain A, which may be irrelevant for domain B. 
+
+\subsection{Domain Filtering: A Solution}
+\label{sec:domain_filtering}
+
+\subsubsection{Two Stage Detector: Domain Filtering + OOD Detector}
+
+To address the risk of domain feature collapse in supervised networks, we can utilize a two-stage process. In the first stage, a pretrained network is used to determine if a data sample is in-domain. In the second stage, an OOD detector is used to determine if in-domain samples are also in-distribution. This requires the assumption that there exists no in-distribution data sample that is out-of-domain, which is consistent with our earlier definitions.
+
+This paper evaluates a K-nearest neighbors (KNN)-based domain filter, similar to a KNN-based OOD detector proposed by \cite{sun2022out}. To calibrate the domain filter, we calculate the domain threshold $\rvt_\rvd$ such that $P(f_{knn}(\{\rvx \in \sX_{train}\}) \leq \rvt_\rvd) = p$, where $f_{knn}$ is a KNN function considering the $k$th neighbor and $p$ is a hyper parameter set to $p = 0.99$. Essentially, we select a distance such that 99\% of the training data falls within that distance. The two stage process considers all samples with $f_{knn} > \rvt_d$ as OOD (due to it being out-of-domain) and uses the second stage detector to determine an OOD score for samples with  $f_{knn} \leq \rvt_d$. This process ensures that only $1\%$ of in-domain samples will be flagged as a false positive. See Algorithm \ref{twostage} in Appendix \ref{twostageapp}.
+
+While there are alternative distance calculation methods and percentile thresholds available, this paper finds that a KNN filter at the $99$th percentile with $K = 50$ works well as a first stage domain filter. In our experiments, we follow OpenOOD's hyperparameter tuning methods and also investigate two additional values $p = 0.98$ and $p = 0.999$. The two-stage process achieves significantly better results on out-of-domain OOD benchmarks while maintaining almost identical performance on in-domain OOD benchmarks. 
+
+\subsubsection{Adjacent, Near, and Far OOD Benchmarks versus In and Out-of-Domain}
+\label{adjacentnearfar}
+
+In most recent work, such as \cite{fort2021exploring}, and in the OpenOOD framework \cite{yang2022openood, zhang2023openood}, there is a distinction between near and far OOD. Near OOD refers to out-of-distribution samples that are semantically different from the training data but visually or structurally similar, e.g., similar textures or contexts. Far OOD refers to samples that are both semantically and visually dissimilar, often coming from completely unrelated domains. 
+
+However, by definition, both near and far OOD must be considered out-of-domain. If an in-distribution dataset is composed of a single domain, e.g., X-rays, where $\{\rvx_\rvd\} \neq \emptyset$, existing near and far OOD benchmarks will be considered out-of-domain, as they would not be considered in the same domain by $f_\rvd$. We observe that the domain filter is very capable at detecting both near and far OOD benchmark datasets as out-of-domain. 
+
+This is in contrast to the adjacent OOD benchmark \cite{yangcan}, which explicitly tests OOD detection performance on in domain samples that are out-of-distribution. The adjacent OOD benchmark constructs a new in-distribution set using a random subset of the training set classes. It then evaluates the OOD performance against the remaining training set classes as if they were OOD, allowing us to consider the impact of in-domain yet OOD samples. When used alone, the domain filter often performs poorly on the adjacent OOD benchmark, as it is unlikely to contain any class features. Work by \cite{yangcan} demonstrates that adjacent OOD is safety-critical because of the risk of unknown classes that come from the same domain. 
+
+\subsubsection{Ensembling vs Filtering}
+
+Ensemble methods have been used in uncertainty estimation and OOD detection before, such as \citep{lakshminarayanan2017simple} and \citep{pmlr-v235-xu24ae}. However, any ensemble would have to contend with a large performance gap between the two models. If we assume that the secondary model is good at out-of-domain OOD, its score would be dragged down by the primary model, which would be worse at out-of-domain OOD. Similarly, the primary model would be dragged down on in-domain OOD by the secondary model. 
+
+Domain filtering significantly reduces the negative impacts of ensembling by allowing the correct model to dominate the OOD score based on the domain of the sample. This allows us to maintain good in-domain OOD detection performance by limiting our negative impact on the primary model. 
+

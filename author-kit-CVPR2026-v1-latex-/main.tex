@@ -26,38 +26,44 @@
 \def\confYear{2026}
 
 %%%%%%%%% TITLE - PLEASE UPDATE
-\title{\LaTeX\ Author Guidelines for \confName~Proceedings}
+\title{Domain Feature Collapse: Implications for Out-of-Distribution Detection and Solutions}
 
 %%%%%%%%% AUTHORS - PLEASE UPDATE
-\author{First Author\\
-Institution1\\
-Institution1 address\\
-{\tt\small firstauthor@i1.org}
+\author{Anonymous CVPR 2026 Submission\\
+Paper ID *****
+% First Author\\
+% Institution1\\
+% Institution1 address\\
+% {\tt\small firstauthor@i1.org}
 % For a paper whose authors are all at the same institution,
 % omit the following lines up until the closing ``}''.
 % Additional authors and addresses can be added with ``\and'',
 % just like the second author.
 % To save space, use either the email address or home page, not both
-\and
-Second Author\\
-Institution2\\
-First line of institution2 address\\
-{\tt\small secondauthor@i2.org}
+% \and
+% Second Author\\
+% Institution2\\
+% First line of institution2 address\\
+% {\tt\small secondauthor@i2.org}
 }
 
 \begin{document}
 \maketitle
-\input{sec/0_abstract}    
+\input{sec/0_abstract}
 \input{sec/1_intro}
-\input{sec/2_formatting}
-\input{sec/3_finalcopy}
+\input{sec/2_preliminaries}
+\input{sec/3_methodology}
+\input{sec/4_experiments}
+\input{sec/5_related_work}
+\input{sec/5a_discussion}
+\input{sec/6_conclusion}
 {
     \small
     \bibliographystyle{ieeenat_fullname}
     \bibliography{main}
 }
 
-% WARNING: do not forget to delete the supplementary pages from your submission 
-% \input{sec/X_suppl}
+% Appendix
+\input{sec/appendix}
 
 \end{document}

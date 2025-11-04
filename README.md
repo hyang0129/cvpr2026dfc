@@ -1,10 +1,10 @@
 # Domain Feature Collapse Research Project
 
-This repository contains the research work on **Domain Feature Collapse** - a novel approach to understanding and addressing feature learning limitations in neural networks across different domains.
+This repository is for converting the **AAAI submission** into a **CVPR 2026 submission**.
 
 ## Project Overview
 
-Domain Feature Collapse investigates how neural networks learn domain-specific features that may not generalize well across different contexts, leading to reduced model robustness and transferability.
+This repository contains the research work on **Domain Feature Collapse** - a novel approach to understanding and addressing feature learning limitations in neural networks across different domains. Domain Feature Collapse investigates how neural networks learn domain-specific features that may not generalize well across different contexts, leading to reduced model robustness and transferability.
 
 ## Repository Structure
 
@@ -29,7 +29,7 @@ Contains CVPR 2026 submission materials:
 
 ## Research Status
 
-**Publication Status**: Submitted to AAAI 2026
+**Publication Status**: Converting AAAI submission to CVPR 2026 submission
 
 ## Key Contributions
 

@@ -9,7 +9,7 @@
 \newcommand{\todo}[1]{{\color{red}#1}}
 \newcommand{\TODO}[1]{\textbf{\color{red}[TODO: #1]}}
 %%
-%% disable for camera ready / submission by uncommenting these lines  
+%% disable for camera ready / submission by uncommenting these lines
 %%
 % \renewcommand{\TODO}[1]{}
 % \renewcommand{\todo}[1]{#1}
@@ -18,7 +18,7 @@
 %% work harder in optimizing text layout. Typically shrinks text by 1/6 of page, enable
 %% it at the very end of the writing process, when you are just above the page limit
 %%
-% \usepackage{microtype}
+\usepackage{microtype}
 
 %%
 %% fine-tune paragraph spacing
@@ -39,10 +39,39 @@
 % \newcommand{\paper}{ProjectName\xspace}
 
 %%
-%% Commonly used math definitions
+%% Commonly used math definitions - loaded from math_commands.tex
 %%
-% \DeclareMathOperator*{\argmin}{arg\,min}
-% \DeclareMathOperator*{\argmax}{arg\,max}
+\input{math_commands}
+
+%%
+%% Additional packages for Domain Feature Collapse paper
+%%
+\usepackage{graphicx}
+% Note: subfigure is replaced by subcaption which is already loaded by cvpr.sty
+\usepackage{booktabs} % for professional tables
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{placeins}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{rotating}
 
 %%
 %% Tigthen underline

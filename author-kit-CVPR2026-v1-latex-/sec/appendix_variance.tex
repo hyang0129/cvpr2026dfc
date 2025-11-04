@@ -1,0 +1,78 @@
+\begin{sidewaystable}
+
+\caption{Performance for the Rock Dataset across different OOD methods and training methods, considering differing percentiles for the domain filter.  DF98 means domain filter at the 98th percentile and DF99.9 means domain filter at the 99.9th percentile. The default domain filter used in this paper is at the 99th percentile.  }
+\label{tab:threshold}
+
+\begin{tabular}{lllllll}
+\toprule
+ & \multicolumn{3}{r}{FPR@95} & \multicolumn{3}{r}{AUROC} \\
+ & CE DinoV2 & CE Resnet & SC Resnet & CE DinoV2 & CE Resnet & SC Resnet \\
+method &  &  &  &  &  &  \\
+\midrule
+PT KNN & 91.9 / 6.6 & 91.9 / 6.6 & 91.9 / 6.6 & 58.2 / 98.0 & 58.2 / 98.0 & 58.2 / 98.0 \\
+MSP & 87.2 / 87.0 & 85.8 / 71.8 & NA & 61.3 / 53.6 & 64.2 / 66.2 & NA \\
+Energy & 87.3 / 85.8 & 86.7 / 71.2 & NA & 66.5 / 52.3 & 64.0 / 68.6 & NA \\
+Mahalanobis & 90.8 / 62.6 & 83.1 / 44.2 & 97.0 / 72.1 & 58.4 / 74.2 & 63.7 / 85.1 & 47.0 / 68.0 \\
+NCI & 85.6 / 76.7 & 75.9 / 64.0 & NA & 64.8 / 62.5 & 67.4 / 71.9 & NA \\
+KNN & 90.0 / 72.1 & 77.3 / 61.8 & 88.3 / 84.0 & 57.8 / 66.0 & 65.0 / 73.8 & 51.0 / 60.4 \\
+ReAct & 87.3 / 84.5 & 84.7 / 75.0 & NA & 66.9 / 53.9 & 63.8 / 65.2 & NA \\
+DF + KNN & 91.5 / 57.9 & 75.1 / 52.5 & 87.3 / 71.0 & 56.5 / 82.8 & 64.2 / 84.5 & 49.3 / 79.2 \\
+DF + ReAct & 87.3 / 74.8 & 84.9 / 61.0 & NA & 65.7 / 75.0 & 63.1 / 80.3 & NA \\
+DF + MDS & 86.8 / 50.5 & 82.0 / 39.8 & 96.5 / 64.6 & 60.1 / 82.9 & 63.0 / 87.4 & 47.8 / 70.6 \\
+DF98 + KNN & 90.4 / 34.7 & 76.1 / 27.9 & 94.3 / 44.5 & 56.2 / 92.2 & 63.5 / 93.7 & 47.0 / 90.9 \\
+DF99.9 + KNN & 91.9 / 71.1 & 76.0 / 60.1 & 87.9 / 82.2 & 56.7 / 71.5 & 64.5 / 77.2 & 50.1 / 66.0 \\
+\bottomrule
+\end{tabular}
+    
+\end{sidewaystable}
+
+\begin{sidewaystable}
+
+\caption{Performance Average for all Dataset (Excluding Rock) across different OOD methods and training methods, considering differing percentiles for the domain filter.  DF98 means domain filter at the 98th percentile and DF99.9 means domain filter at the 99.9th percentile. The default domain filter used in this paper is at the 99th percentile.  }
+\label{tab:threshold2}
+\begin{tabular}{lllllll}
+\toprule
+ & \multicolumn{3}{r}{FPR@95} & \multicolumn{3}{r}{AUROC} \\
+ & CE DinoV2 & CE Resnet & SC Resnet & CE DinoV2 & CE Resnet & SC Resnet \\
+method &  &  &  &  &  &  \\
+\midrule
+PT KNN & 79.7 / 0.9 & 79.7 / 0.9 & 79.7 / 0.9 & 65.1 / 99.6 & 65.1 / 99.6 & 65.1 / 99.6 \\
+MSP & 65.4 / 43.0 & 61.8 / 38.9 & NA & 75.1 / 82.0 & 78.3 / 87.4 & NA \\
+Energy & 65.0 / 37.3 & 65.3 / 41.4 & NA & 75.3 / 85.6 & 78.0 / 87.6 & NA \\
+Mahalanobis & 62.5 / 18.5 & 59.9 / 16.2 & 62.3 / 34.7 & 75.9 / 93.4 & 78.4 / 94.4 & 78.9 / 87.6 \\
+NCI & 66.7 / 35.3 & 74.5 / 36.1 & NA & 74.1 / 86.6 & 73.3 / 88.5 & NA \\
+KNN & 61.9 / 25.4 & 64.4 / 25.8 & 61.5 / 32.9 & 75.8 / 91.0 & 76.1 / 91.1 & 78.0 / 87.8 \\
+ReAct & 64.2 / 36.4 & 71.9 / 47.7 & NA & 75.9 / 86.3 & 74.4 / 84.9 & NA \\
+DF + KNN & 65.2 / 3.2 & 64.3 / 2.5 & 63.8 / 3.2 & 73.9 / 99.0 & 75.8 / 99.2 & 76.2 / 99.0 \\
+DF + ReAct & 64.3 / 3.7 & 72.3 / 4.1 & NA & 75.7 / 98.8 & 73.8 / 99.1 & NA \\
+DF + MDS & 62.1 / 2.9 & 60.0 / 11.8 & 62.4 / 11.6 & 76.1 / 99.0 & 78.6 / 96.3 & 78.1 / 95.2 \\
+DF98 + KNN & 64.8 / 2.4 & 63.8 / 2.2 & 62.7 / 3.3 & 74.0 / 99.0 & 75.8 / 99.2 & 77.1 / 98.9 \\
+DF99.9 + KNN & 63.6 / 9.0 & 64.8 / 7.7 & 63.2 / 7.7 & 75.2 / 97.5 & 75.9 / 98.0 & 77.5 / 98.0 \\
+\bottomrule
+\end{tabular}
+    
+\end{sidewaystable}
+
+\subsection{Variance Analysis}
+
+\label{variance}
+
+We use a Wilcoxon Signed Rank test to determine the whether or not the improvement offered by domain filtering is statistically consistent, in Table \ref{tab:var}. Due to the non normal distribution of FPR@95 values across seeds, we use a non parametric test, as opposed to the paired t test. We show that for each ID dataset, the average far (out of domain) OOD performance improves with domain filtering in each seed. This is a consistent result implying the domain filtering never harms far (out of domain) OOD performance.
+
+
+\begin{sidewaystable}
+    
+
+\caption{Wilcoxon signed-rank test p-values comparing FPR@95 in Far (Out of Domain) OOD detection using regular KNN and domain filtered KNN across models and ID datasets. Low p-values indicate statistically significant improvements from filtering. Note that the p value of 0.03125 indicates that in all 5 seeds, the domain filtered KNN method achieved lower FPR@95 than the regular KNN method. This is also the lowest possible p value with a paired sample size of 5.}
+\label{tab:var}
+\begin{tabular}{llllllllllll}
+\toprule
+ & Tissue & Plant & Yoga & Colon & Garbage & Food & Fashion & Rock & Eurosat & Cards & Butterfly \\
+\midrule
+CE DinoV2 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 \\
+CE Resnet & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 \\
+SC Resnet & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 & 0.03 \\
+\bottomrule
+\end{tabular}
+\end{sidewaystable}
+

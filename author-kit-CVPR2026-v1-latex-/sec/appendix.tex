@@ -60,6 +60,24 @@ $$
 I(\rvx; \rvy) = 0 \rightarrow I(f(\rvx);\rvy) = 0
 $$
 
+\section{Fano's Inequality}
+\label{fano}
+
+\textcolor{black}{
+\begin{theorem}
+Fano's Inequality (See \citep{robert1952fano}). \\Let $\rvy$ be a discrete random variable representing the true label with $\mathcal{Y} $ possible values and cardinality of $|\mathcal{Y}| $ and $\rvx$ be a random variable used to predict $\rvy$. Let $e$ be the occurrence of an error such that $\rvy \neq \hat{ \rvy}$ where $\hat{ \rvy} = f(\rvx)$. Let $H_b$ represent the binary entropy function such that $H_b(e)=-P(e) \log P(e)-(1-P(e)) \log (1-P(e))$. The lower bound for $P(e)$ increases with lower mutual information $I(\rvx;\rvy)$.
+\begin{align}
+H_b(e) + P(e) \log(| \mathcal{Y} |-1) \geq H(\rvy) - I(\rvx; \rvy).
+\end{align}
+\end{theorem}}
+
+Fano's inequality establishes a fundamental relationship between mutual information and prediction error. In the context of domain feature collapse, this theorem allows us to quantify the impact of partial compression scenarios where $I(\rvx_\rvd; \rvz) > 0$ but is still small. Even when domain features are not completely eliminated from the learned representation, Fano's inequality shows that low mutual information between domain features and the representation will result in high error rates for domain-based predictions, making OOD detection unreliable.
+
+\subsection{Interpreting Experimental Results as Lower Bounds on Mutual Information}
+
+Fano's inequality provides a crucial interpretation of our experimental results: OOD detection performance establishes a lower bound on $I(\rvx_\rvd; \rvz)$. Specifically, if a representation $\rvz$ achieves a certain level of performance in separating in-domain from out-of-domain samples, then $I(\rvx_\rvd; \rvz)$ must be at least high enough to support that performance level. By Fano's inequality, if the mutual information were lower, the error rate would necessarily increase, degrading OOD detection performance.
+
+This allows us to indirectly measure mutual information through empirical performance: high separation ability (low FPR@95, high AUROC) implies a high lower bound on $I(\rvx_\rvd; \rvz)$, while poor separation ability implies a low lower bound. Our experiments thus not only demonstrate domain feature collapse qualitatively but also quantify the information-theoretic gap between supervised and pretrained representations.
 
 \section{Main Theorems and Proofs}
 
@@ -196,11 +214,11 @@ This supports the intuition that if one added a random noise channel it will not
 
 \begin{theorem}
 
-Let $\rvx$ come from a distribution. $\rvx$ is composed of two independent variables $\rvx_\rvd$ and $\rvx_\rvy$, where $\rvx_\rvd$ is a set of domain features as per definition \ref{definedomainfeatures}. Let $\rvd$ be a domain label generated from $f_\rvd(\rvx_\rvd) = \rvd_1$, where $\rvd_1$ is a constant value for all $\rvx$. Let $\rvy$ be a class label generated from $f_\rvy(\rvx_\rvd, \rvx_\rvy) = \rvy$. Let $\rvz$ be any sufficient representation of $\rvx$ for $\rvy$ that satisfies the sufficiency definition \ref{definesuff} and minimizes the loss function $\mathcal{L} = I(\rvx_\rvd \rvx_\rvy; \rvz) - \beta I(\rvz;\rvy)$. The possible $\rvz$ that minimizes $\mathcal{L}$  and is sufficient must meet the condition $I(\rvx_\rvd; \rvz) = 0$. 
+Let $\rvx$ come from a distribution. $\rvx$ is composed of two independent variables $\rvx_\rvd$ and $\rvx_\rvy$, where $\rvx_\rvd$ is a set of domain features as per definition \ref{definedomainfeatures}. Let $\rvd$ be a domain label random variable generated from the labeling function $f_\rvd(\rvx_\rvd)$. In the single-domain training setting, $f_\rvd(\rvx_\rvd) = \rvd_1$ for all $\rvx$ in the training set, where $\rvd_1$ is a constant domain value. Let $\rvy$ be a class label generated from $f_\rvy(\rvx_\rvd, \rvx_\rvy) = \rvy$. Let $\rvz$ be any sufficient representation of $\rvx$ for $\rvy$ that satisfies the sufficiency definition \ref{definesuff} and minimizes the loss function $\mathcal{L} = I(\rvx_\rvd \rvx_\rvy; \rvz) - \beta I(\rvz;\rvy)$. The possible $\rvz$ that minimizes $\mathcal{L}$  and is sufficient must meet the condition $I(\rvx_\rvd; \rvz) = 0$.
 
 
 
-Hypothesis: 
+Hypothesis:
 
 $(H_1)$  $\rvz$ is fully determined by $\rvx$ : $H(\rvz|\rvx) = 0$
 
@@ -210,7 +228,7 @@ $(H_3)$  $\rvz$ is a sufficient representation of $\rvx: I(\rvx ; \rvy | \rvz)=0
 
 $(H_4)$ $\rvx$ is composed of two independent variables $\rvx_\rvd, \rvx_\rvy$ : $\rvx = \rvx_\rvd, \rvx_\rvy, I(\rvx_\rvy; \rvx_\rvd) = 0$
 
-$(H_5)$ $\rvy$  and $\rvd$ are fully determined by $\rvx_\rvy$ and $\rvx_\rvd$, respectively: $H(\rvy | \rvx_\rvy) = 0$, $H(\rvd | \rvx_\rvd) = 0$.
+$(H_5)$ $\rvy$  and $\rvd$ are fully determined by $\rvx_\rvy$ and $\rvx_\rvd$, respectively: $H(\rvy | \rvx_\rvy) = 0$, $H(\rvd | \rvx_\rvd) = 0$. In the single-domain setting, since $\rvd = \rvd_1$ (constant) for all training samples, $I(\rvx_\rvd; \rvy) = 0$.
 
 Thesis:
 

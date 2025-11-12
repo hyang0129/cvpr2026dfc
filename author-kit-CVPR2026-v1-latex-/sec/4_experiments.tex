@@ -3,7 +3,7 @@
 
 \subsection{Experimental Setup}
 
-For each narrow domain dataset, we generate a ID train, ID validation, ID test, and OOD test dataset using a unique seed. After training with ID data on one of the three methods below, we evaluate multiple OOD detection algorithms using the weights with the highest validation classification accuracy. For each OOD detection algorithm, we use the default postprocessor provided by OpenOOD \citep{zhang2023openood}. We also implement two additional two-stage post processors, combining a pretrained DinoV2 ViTs14 \citep{oquab2023dinov2} with ReAct \citep{sun2021react} or KNN \citep{sun2022out}; more information can be found in Appendix \ref{setup}. Code for running experiments and benchmarks is included in supplementary material.
+For each narrow domain dataset, we generate a ID train, ID validation, ID test, and OOD test dataset using a unique seed. After training with ID data on one of the three methods below, we evaluate multiple OOD detection algorithms using the weights with the highest validation classification accuracy. For each OOD detection algorithm, we use the default postprocessor provided by OpenOOD \citep{zhang2023openood}. We also implement two additional two-stage post processors, combining a pretrained DinoV2 ViTs14 \citep{oquab2023dinov2} with ReAct \citep{sun2021react} or KNN \citep{sun2022out}. \textbf{Importantly, these two-stage detectors use distinct representation spaces}: the DinoV2 domain filter operates in the pretrained feature space, while the second-stage detector (ReAct or KNN) operates in the supervised model's feature space. This is fundamentally different from simply running KNN twice in the same representation. More information can be found in Appendix \ref{setup}. Code for running experiments and benchmarks is included in supplementary material.
 \begin{itemize}
 \item \textbf{Cross Entropy Resnet50 (CE Resnet).} We fine tune a pretrained Resnet50 for $300$ epochs using an SGD optimizer with an initial learning rate of $0.1$. 
 \item \textbf{Cross Entropy DinoV2 (CE DinoV2).} We fine tune a pretrained DinoV2 ViTs14 for $75$ epochs using an Adam optimizer with an initial learning rate of $0.0001$.
@@ -64,7 +64,7 @@ KNN & \textbf{61.9} / 25.4 & 64.4 / 25.8 & \textbf{61.5} / 32.9 & 75.8 / 91.0 & 
 ReAct & 64.2 / 36.4 & 71.9 / 47.7 & NA & 75.9 / 86.3 & 74.4 / 84.9 & NA \\
 \textit{DF + KNN} & 65.2 / 3.2 & 64.3 / \textbf{2.5} & 63.8 / \textbf{3.2} & 73.9 / 99.0 & 75.8 / \textbf{99.2} & 76.2 / \textbf{99.0} \\
 \textit{DF + ReAct} & 64.3 / 3.7 & 72.3 / 4.1 & NA & 75.7 / 98.8 & 73.8 / 99.1 & NA \\
-\textit{DF + MDS} & 62.1 / \textbf{2.9} & \textbf{60.0} / 11.8 & 62.4 / 11.6 & \textbf{76.1} / \textbf{99.0} & \textbf{78.6} / 96.3 & 78.1 / 95.2 \\
+\textit{DF + Mahalanobis} & 62.1 / \textbf{2.9} & \textbf{60.0} / 11.8 & 62.4 / 11.6 & \textbf{76.1} / \textbf{99.0} & \textbf{78.6} / 96.3 & 78.1 / 95.2 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -89,7 +89,7 @@ KNN & 40.0 / 13.2 & 48.4 / 31.3 & \textbf{73.3} / 62.7 & 77.9 / 33.3 & 77.3 / 61
 ReAct & \textbf{39.0} / 61.2 & 55.5 / 54.4 & 85.9 / 71.1 & 82.9 / 58.6 & 84.7 / 75.0 & \textbf{81.7} / 48.0 \\
 \textit{DF + KNN} & 41.5 / \textbf{0.2} & 49.6 / \textbf{1.5} & 73.5 / \textbf{2.3} & 76.5 / 2.1 & 75.1 / 52.5 & 92.2 / 0.4 \\
 \textit{DF + ReAct} & 40.6 / 0.7 & 65.2 / 4.3 & 86.4 / 2.2 & 82.9 / \textbf{1.8} & 84.9 / 61.0 & 81.9 / \textbf{0.7} \\
-\textit{DF + MDS} & 40.4 / 6.9 & 51.4 / 10.4 & 76.6 / 39.1 & 61.6 / 12.7 & \textbf{82.0} / \textbf{39.8} & 91.3 / 0.9 \\
+\textit{DF + Mahalanobis} & 40.4 / 6.9 & 51.4 / 10.4 & 76.6 / 39.1 & 61.6 / 12.7 & \textbf{82.0} / \textbf{39.8} & 91.3 / 0.9 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -112,7 +112,7 @@ KNN & 40.0 & 12.4 & 11.9 & 11.6 & 26.7 & 4.3 & 16.0 & 17.8 & 5.0 \\
 ReAct & \textbf{39.0} & 41.0 & 62.6 & 64.2 & 45.7 & 52.4 & 77.2 & 74.2 & 72.3 \\
 DF + KNN & 41.5 & \textbf{0.2} & \textbf{0.2} & \textbf{0.2} & \textbf{0.3} & \textbf{0.1} & \textbf{0.2} & \textbf{0.3} & \textbf{0.1} \\
 DF + ReAct & 40.6 & 0.4 & 0.8 & 0.8 & 0.5 & 0.6 & 0.9 & 0.9 & 0.8 \\
-DF + MDS & 40.4 & 8.9 & 4.6 & 4.7 & 15.5 & 3.3 & 8.6 & 7.3 & 1.8 \\
+DF + Mahalanobis & 40.4 & 8.9 & 4.6 & 4.7 & 15.5 & 3.3 & 8.6 & 7.3 & 1.8 \\
 \bottomrule
 \end{tabular}
 \end{table*}

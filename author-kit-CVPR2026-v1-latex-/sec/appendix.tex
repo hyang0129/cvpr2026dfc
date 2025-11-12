@@ -430,8 +430,10 @@ Since both $I(\rvx ; \rvy)$ and $I(\rvy ; \rvz)$ are non-negative $\left(P_1\rig
 \State \textbf{Output:}
     \State OOD decision $\in \{\text{True}, \text{False}\}$
 
+\State \textbf{Note:} Stage 1 uses pretrained feature space; Stage 2 uses supervised feature space
+
 \Procedure{DomainFilter}{$\rvx, \sX_{train}, k, \rvt_\rvd$}
-    \State $d_k \gets \text{KNN-Distance}(\rvx, \sX_{train}, k)$ \Comment{$k^{th}$ neighbor distance}
+    \State $d_k \gets \text{KNN-Distance}(\rvx, \sX_{train}, k)$ \Comment{In pretrained DinoV2 space}
     \If{$d_k > \rvt_\rvd$}
         \State \Return \text{True} \Comment{Out-of-Domain}
     \Else
@@ -440,12 +442,12 @@ Since both $I(\rvx ; \rvy)$ and $I(\rvy ; \rvz)$ are non-negative $\left(P_1\rig
 \EndProcedure
 
 \Procedure{TwoStageDetection}{$x$}
-    \State \text{// Stage 1: Domain Filtering}
+    \State \text{// Stage 1: Domain Filtering (Pretrained Feature Space)}
     \If{\Call{DomainFilter}{$\rvx, \sX_{train}, k, \rvt_\rvd$}}
         \State \Return \text{True} \Comment{Reject as OOD (Avoids Domain Feature Collapse)}
     \EndIf
 
-    \State \text{// Stage 2: In-Distribution OOD Detection}
+    \State \text{// Stage 2: In-Distribution OOD Detection (Supervised Feature Space)}
     \State $s \gets \text{OOD-Score}(\rvx)$ \Comment{Using preferred OOD detector}
     \If{$s > \tau$} \Comment{$\tau$ is OOD threshold}
         \State \Return \text{True}
@@ -504,7 +506,7 @@ We use evaluation process as the Cross Entropy Resnet50, except all logit based 
 \subsection{OOD Method References}
 
 \label{oodref}
-PT KNN refers to a KNN OOD detector \citep{sun2022out} using only a pretrained DinoV2. DF + KNN refers to the two stage domain filter combined with an KNN OOD detector \citep{sun2022out} and likewise with DF + ReAct \citep{sun2021react}. Other listed methods are MSP \citep{hendrycks2016baseline}, Energy \citep{liu2020energy}, Mahalanobis \citep{lee2018simple}, NCI \citep{liu2025detecting}, and KNN \citep{sun2022out}.
+PT KNN refers to a KNN OOD detector \citep{sun2022out} using only a pretrained DinoV2. DF + KNN refers to the two stage domain filter combined with an KNN OOD detector \citep{sun2022out} and likewise with DF + ReAct \citep{sun2021react} and DF + Mahalanobis \citep{lee2018simple}. Other listed methods are MSP \citep{hendrycks2016baseline}, Energy \citep{liu2020energy}, Mahalanobis \citep{lee2018simple}, NCI \citep{liu2025detecting}, and KNN \citep{sun2022out}.
 
 
 

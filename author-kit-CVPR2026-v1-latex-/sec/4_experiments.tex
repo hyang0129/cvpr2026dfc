@@ -37,15 +37,13 @@ We use $11$ single-domain datasets where all training samples share common domai
 
 We report highlighted results in Tables \ref{tab:summary}, \ref{tab:fpr95}, and \ref{tab:fprcolon}. These tables are a representative sample of the detailed results, see Appendix \ref{expresult}. All methods have some level of difficulty in out-of-domain OOD detection, even though datasets like MNIST should not be challenging. On some in-distribution datasets, such as EuroSat, we observe that many methods obtain similar or better in-domain OOD detection performance compared to out-of-domain OOD detection performance. These results confirm the theoretical findings regarding domain feature collapse from Theorem \ref{mainbodygenloss}.
 
-Crucially, our experimental results establish a lower bound on $I(\rvx_\rvd; \rvz)$ for each representation. The poor out-of-domain detection performance of supervised models (e.g., MSP with FPR@95 of $53.0$\% on Colon) indicates a low lower bound on $I(\rvx_\rvd; \rvz)$ in supervised representations. By Fano's inequality, if $I(\rvx_\rvd; \rvz)$ were even lower, performance would necessarily degrade further. In contrast, the pretrained DinoV2 domain filter achieves FPR@95 of $0.0$\% on the same dataset, demonstrating a substantially higher lower bound on $I(\rvx_\rvd; \rvz)$. This quantifies the information-theoretic gap between supervised and pretrained representations predicted by our theory.
+Crucially, our experimental results establish a lower bound on $I(\rvx_\rvd; \rvz)$ for each representation. The poor out-of-domain detection performance of supervised models (e.g., MSP with FPR@95 of $53.0$\% on Colon) indicates a low lower bound on $I(\rvx_\rvd; \rvz)$ in supervised representations. In contrast, the pretrained DinoV2 domain filter achieves FPR@95 of $0.0$\% on the same dataset, demonstrating a substantially higher lower bound on $I(\rvx_\rvd; \rvz)$. This quantifies the information-theoretic gap between supervised and pretrained representations predicted by our theory.
 
-It is also important to note that there is high variance for individual out-of-domain datasets when benchmarking. For example, when models are trained on the Colon ID dataset, they tend to struggle with detecting MNIST patterns as OOD. We observe that certain OOD sets are more problematic depending on the ID set. This suggests that only some OOD datasets contain features that could be similar to the ID class features, supporting the idea that domain feature collapse occurs from an over-reliance on class features and the inability to identify domain features. 
+In every case, adding a domain filter reduces the FPR@95 for out of domain OOD detection by a significant margin. For example, ReAct achieves 39.0\% FPR@95 in-domain on the Colon dataset, but suffers from 61\% FPR@95 on out-of-domain OOD samples. Adding a domain filter reduces this to $0.7$\%, effectively eliminating the problem while maintaining in-domain performance.
 
-In every case, adding a domain filter reduces the FPR@95 for out of domain OOD detection by a significant margin, sometimes trivializing the threat of out of domain OOD samples. For example, ReAct performs best in-domain on the Colon dataset, but suffers from extremely high FPR@95 of $61$\% on out of domain OOD samples. Adding a domain filter reduces this FPR rate to $0.7$\%, effectively eliminating the problem of out-of-domain OOD detection. In most cases, adding the domain filter reduces in domain performance by a marginal amount. 
+These results demonstrate that domain feature collapse is a real problem across a wide variety of datasets. We also observe that domain filtering is a generally applicable  solution to address domain feature collapse. % but there are some trade offs in terms of...
 
-These results demonstrate that domain feature collapse is a real problem across a wide variety of datasets. We also observe that domain filtering is a generally applicable  solution to address domain feature collapse. % but there are some trade offs in terms of... 
-
-\begin{table*}
+\begin{table*}[t]
 \centering
 \caption{Summary OOD Performance Across All Datasets Reported As (In-Domain OOD Score)/(Out-of-Domain OOD Score). We exclude the Rock dataset from this summary as it is an outlier for reasons explained in Section \ref{discussion}.  Best scores are in bold (excluding PT KNN baseline). The domain filter methods are italicized. SC Resnet is not compatible with OOD methods that use logits.  See Appendix \ref{oodref} for OOD detection method descriptions and Appendix \ref{expresult} for more detailed results.}
 \label{tab:summary}
@@ -71,7 +69,7 @@ ReAct & 64.2 / 36.4 & 71.9 / 47.7 & NA & 75.9 / 86.3 & 74.4 / 84.9 & NA \\
 
 
 
-\begin{table*}
+\begin{table*}[t]
 \centering
 \caption{Summary FPR@95 OOD Performance Across All Datasets for Selected ID Datasets Reported As (In-Domain OOD Score)/(Out-of-Domain OOD Score) for the CE Resnet model. Best scores are in bold (excluding PT KNN baseline). See Appendix \ref{oodref} for OOD detection method descriptions and Appendix \ref{expresult} for more detailed results.}
 \label{tab:fpr95}
@@ -94,7 +92,7 @@ ReAct & \textbf{39.0} / 61.2 & 55.5 / 54.4 & 85.9 / 71.1 & 82.9 / 58.6 & 84.7 / 
 \end{tabular}
 \end{table*}
 
-\begin{table*}
+\begin{table*}[t]
 \centering
 \caption{Detailed FPR@95 OOD Detection Performance for the Colon Dataset using the CE Resnet model. See Appendix \ref{oodref} for OOD detection method descriptions. Best scores are in bold (excluding PT KNN baseline).}
 \label{tab:fprcolon}

@@ -15,7 +15,7 @@ Examples include medical X-rays \citep{yang2023medmnist}, geology \citep{rock_da
 \subsection{Domain Feature Collapse}
 
 We provide the first formal proof that domain feature loss is an \emph{inevitable consequence} of information bottleneck optimization under single-domain training. Any supervised model will learn representations with $I(\rvx_\rvd, \rvz) = 0$ under full bottleneck compression -- a counterintuitive result where better class-specific optimization necessarily leads to worse domain robustness.
-\begin{theorem} \textcolor{black}{Strict} Domain Feature Collapse in the Minimal Sufficient Statistic. \\
+\begin{theorem} Strict Domain Feature Collapse in the Minimal Sufficient Statistic. \\
     Let $\rvx$ come from a distribution. $\rvx$ is composed of two independent variables $\rvx_\rvd$ and $\rvx_\rvy$, where $\rvx_\rvd$ is a set of domain features as per definition \ref{definedomainfeatures}. Let $\rvd$ be a domain label random variable generated from the labeling function $f_\rvd(\rvx_\rvd)$. In the single-domain training setting, $f_\rvd(\rvx_\rvd) = \rvd_1$ for all $\rvx$ in the training set, where $\rvd_1$ is a constant domain value. Let $\rvy$ be a class label generated from $f_\rvy(\rvx_\rvd, \rvx_\rvy) = \rvy$. Let $\rvz$ be any sufficient representation of $\rvx$ for $\rvy$ that satisfies the sufficiency definition \ref{definesuff} and minimizes the loss function $\mathcal{L} = I(\rvx_\rvd \rvx_\rvy; \rvz) - \beta I(\rvz;\rvy)$. The possible $\rvz$ that minimizes $\mathcal{L}$ and is sufficient must meet the condition $I(\rvx_\rvd; \rvz) = 0$.
 
 

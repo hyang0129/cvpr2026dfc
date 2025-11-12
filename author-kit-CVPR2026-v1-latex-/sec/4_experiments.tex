@@ -3,7 +3,7 @@
 
 \subsection{Experimental Setup}
 
-For each narrow domain dataset, we generate a ID train, ID validation, ID test, and OOD test dataset using a unique seed. After training with ID data on one of the three methods below, we evaluate multiple OOD detection algorithms using the weights with the highest validation classification accuracy. For each OOD detection algorithm, we use the default postprocessor provided by OpenOOD \citep{zhang2023openood}. We also implement two additional two-stage post processors, combining a pretrained DinoV2 ViTs14 \citep{oquab2023dinov2} with ReAct \citep{sun2021react} or KNN \citep{sun2022out}; more information can be found in Appendix \ref{setup}.
+For each narrow domain dataset, we generate a ID train, ID validation, ID test, and OOD test dataset using a unique seed. After training with ID data on one of the three methods below, we evaluate multiple OOD detection algorithms using the weights with the highest validation classification accuracy. For each OOD detection algorithm, we use the default postprocessor provided by OpenOOD \citep{zhang2023openood}. We also implement two additional two-stage post processors, combining a pretrained DinoV2 ViTs14 \citep{oquab2023dinov2} with ReAct \citep{sun2021react} or KNN \citep{sun2022out}; more information can be found in Appendix \ref{setup}. Code for running experiments and benchmarks is included in supplementary material.
 \begin{itemize}
 \item \textbf{Cross Entropy Resnet50 (CE Resnet).} We fine tune a pretrained Resnet50 for $300$ epochs using an SGD optimizer with an initial learning rate of $0.1$. 
 \item \textbf{Cross Entropy DinoV2 (CE DinoV2).} We fine tune a pretrained DinoV2 ViTs14 for $75$ epochs using an Adam optimizer with an initial learning rate of $0.0001$.
@@ -31,52 +31,7 @@ A consequence of repeating the adjacent OOD benchmark across multiple seeds is a
 
 \subsection{Single-Domain Datasets}
 
-We use the following $11$ single-domain datasets as the in-distribution training data to evaluate the impact of domain feature collapse. Each dataset represents a narrow, homogeneous domain where all training samples share common domain features $\rvx_\rvd$ (e.g., all images are satellite imagery, or all images are medical pathology slides, or all images are playing cards). This single-domain characteristic is critical: it ensures that domain features $\rvx_\rvd$ are independent of class features $\rvx_\rvy$ and thus subject to compression during supervised learning, as predicted by Theorem \ref{mainbodygenloss}. These datasets often contain class features that are quite subtle and difficult for pretrained models to pick up. Additional descriptions and sample images are provided in Appendix \ref{dataset}.
-
-\textbf{Butterfly} – A butterfly species classification dataset \citep{AIPlanet_DataSprint107_2024}.
-
-\textbf{Cards} – A playing card classification dataset by rank and suit \citep{card_data}.
-
-\textbf{Colon} – A colon pathology dataset with different diseases labeled \citep{yang2023medmnist}.
-
-\textbf{Eurosat} – A satellite images dataset for classifying different types of land use \citep{helber2019eurosat}.
-
-\textbf{Fashion} – The FashionMNIST dataset describing different articles of clothing \citep{fashion}.
-
-\textbf{Food} – The Food101 datasets \citep{food} with $101$ classes of different types of food.
-
-\textbf{Garbage} – A dataset to classify the material of different waste objects \citep{single2023realwaste}.
-
-\textbf{Plant} – A plant leaves dataset detailing different types of disease \citep{plant}.
-
-\textbf{Rock} – A dataset of different types of rocks and minerals \citep{rock_data}.
-
-\textbf{Tissue} – A kidney cortex microscope dataset with various types of tissue labeled \citep{yang2023medmnist}.
-
-\textbf{Yoga} – A dataset of people performing different yoga poses from the internet \citep{yoga_data}.
-
-
-% \textbf{Eurosat} - A satellite images dataset for classifying different types of land use \citep{helber2019eurosat}.
-
-% \textbf{Yoga} - A dataset of people performing different yoga poses from the internet \citep{yoga_data}. 
-
-% \textbf{Rock} - A dataset of different types of rocks and minerals \citep{rock_data}. 
-
-% \textbf{Colon} - A colon pathology dataset with different diseases labeled \citep{yang2023medmnist}. 
-
-% \textbf{Tissue} - A kidney cortex microscope dataset with various types of tissue labeled \citep{yang2023medmnist}.
-
-% \textbf{Fashion} - The FashionMNIST dataset describing different articles of clothing \citep{fashion}.
-
-% \textbf{Plant} - A plant leaves dataset detailing different types of disease \citep{plant}.
-
-% \textbf{Food} - The Food101 datasets \citep{food} with 101 classes of different types of food. 
-
-% \textbf{Butterfly} - A butterfly specifies classification dataset \citep{AIPlanet_DataSprint107_2024}.
-
-% \textbf{Garbage} - A dataset to classify the material of different waste objects \citep{single2023realwaste}.
-
-% \text{Cards} - A playing card classification dataset by rank and suit \citep{card_data}.
+We use $11$ single-domain datasets where all training samples share common domain features $\rvx_\rvd$, ensuring domain features are independent of class features $\rvx_\rvy$ and subject to compression as predicted by Theorem \ref{mainbodygenloss}. Datasets include: \textbf{Butterfly} (species classification \citep{AIPlanet_DataSprint107_2024}), \textbf{Cards} (playing cards \citep{card_data}), \textbf{Colon} (pathology \citep{yang2023medmnist}), \textbf{Eurosat} (satellite land use \citep{helber2019eurosat}), \textbf{Fashion} (FashionMNIST \citep{fashion}), \textbf{Food} (Food101 \citep{food}), \textbf{Garbage} (waste materials \citep{single2023realwaste}), \textbf{Plant} (leaf diseases \citep{plant}), \textbf{Rock} (minerals \citep{rock_data}), \textbf{Tissue} (kidney cortex \citep{yang2023medmnist}), and \textbf{Yoga} (poses \citep{yoga_data}). See Appendix \ref{dataset} for details and sample images.
 
 \subsection{Results}
 

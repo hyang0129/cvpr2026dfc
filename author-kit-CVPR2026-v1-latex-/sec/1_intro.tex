@@ -4,8 +4,9 @@
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{domain_feature_collapse.jpg}
-  \caption{Domain Feature Collapse: Supervised learning on single-domain data inevitably produces representations where domain information is lost ($I(\rvx_\rvd; \rvz) = 0$). This leads to catastrophic failure in OOD detection, as models cannot distinguish between in-domain and out-of-domain samples without domain-specific features.}
+  \caption{Domain Feature Collapse: Supervised learning on single-domain data inevitably produces representations where domain information is lost ($I(\rvx_\rvd; \rvz) = 0$). This leads to catastrophic failure in OOD detection since models cannot distinguish in-domain from out-of-domain samples without domain-specific features.}
   \label{fig:domain_collapse}
+  \vspace{-0.5cm}
 \end{figure}
 
 The deployment of deep neural networks (DNNs) in safety-critical domains -- such as autonomous driving \citep{ramanagopal2018failing}, biometric authentication \citep{wang2021deep}, and medical diagnostics \citep{bakator2018deep} -- necessitates robust out-of-distribution (OOD) detection to flag inputs whose labels were not seen during training. While state-of-the-art OOD detection methods demonstrate strong performance on established benchmarks \citep{zhang2023openood}, these benchmarks almost exclusively use multi-domain in-distribution (ID) sets such as CIFAR10/100 \citep{cifar10} and ImageNet \citep{deng2009imagenet}. This creates a critical gap: current methods are tailored to scenarios where ID data is inherently diverse across domains, yet many real-world applications -- medical imaging \citep{zhang2021out}, satellite imagery \citep{ekim2024distribution}, and agriculture \citep{saadati2024out} -- deploy models on single, narrow domains with highly consistent data characteristics.

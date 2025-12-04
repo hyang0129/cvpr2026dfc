@@ -4,8 +4,9 @@
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{domain_feature_collapse.jpg}
-  \caption{Domain Feature Collapse: Supervised learning on single-domain data inevitably produces representations where domain information is lost ($I(\rvx_\rvd; \rvz) = 0$). This leads to catastrophic failure in OOD detection, as models cannot distinguish between in-domain and out-of-domain samples without domain-specific features.}
+  \caption{Domain Feature Collapse: Supervised learning on single-domain data inevitably produces representations where domain information is lost ($I(\rvx_\rvd; \rvz) = 0$). This leads to catastrophic failure in OOD detection since models cannot distinguish in-domain from out-of-domain samples without domain-specific features.}
   \label{fig:domain_collapse}
+  \vspace{-0.5cm}
 \end{figure}
 
 State-of-the-art OOD detection methods demonstrate strong performance on established benchmarks \citep{zhang2023openood}, yet these benchmarks almost exclusively use multi-domain in-distribution (ID) sets such as CIFAR10/100 \citep{cifar10} and ImageNet \citep{deng2009imagenet}. When evaluated on single-domain datasets -- such as medical imaging \citep{zhang2021out}, satellite imagery \citep{ekim2024distribution}, or agriculture \citep{saadati2024out} -- these same methods exhibit catastrophic failure on out-of-domain OOD detection. For instance, models trained on medical images achieve only 53\% FPR@95 when detecting MNIST \citep{lecun1998gradient} digits as OOD, despite MNIST being trivially distinguishable from medical images. \textbf{Why does this failure occur, and what does it reveal about representation learning?}

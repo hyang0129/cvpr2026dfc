@@ -1,0 +1,69 @@
+\section{Methodology}
+\label{sec:method}
+
+\subsection{Dataset Domain and Domain Features}
+
+We define the dataset's domain $\rvd$ via a domain labeling function $f_{\rvd}(\rvx)$. In single-domain settings, all training data shares the same domain: $\forall \rvx \in  \{\rvx : f_{\rvy}(\rvx) \in  \sY_{in}\}, f_{\rvd}(\rvx) = \rvd_1$, implying $\forall \rvx \in \{\rvx : f_{\rvd}(\rvx) \neq \rvd_1\}, f_{\rvy}(\rvx) \notin \sY_{in}$.
+
+\begin{definition}
+\emph{Domain Features}. Given a dataset with domain $\rvd$ determined by $f_{\rvd}(\rvx)$, we define domain features $\rvx_\rvd$ as the minimal subset of features of $\rvx$ sufficient for $f_{\rvd}$, independent of the minimal sufficient class features $\rvx_\rvy$: $I(\rvx_\rvd ; \rvx_\rvy) = 0$.
+\label{definedomainfeatures}
+\end{definition}
+
+Examples include medical X-rays \citep{yang2023medmnist}, geology \citep{rock_data}, or satellite imagery \citep{helber2019eurosat}. Domains exist in a hierarchy (e.g., cats $\subset$ mammals $\subset$ animals), with wider domains having fewer domain features. Multi-domain datasets like ImageNet have $|\{\rvx_\rvd\}| \approx 0$ as their class diversity spans multiple domains.
+
+\subsection{Domain Feature Collapse}
+
+We provide the first formal proof that domain feature loss is an \emph{inevitable consequence} of information bottleneck optimization under single-domain training. Any supervised model will learn representations with $I(\rvx_\rvd, \rvz) = 0$ under full bottleneck compression -- a counterintuitive result where better class-specific optimization necessarily leads to worse domain robustness.
+\begin{theorem} Strict Domain Feature Collapse in the Minimal Sufficient Statistic. \\
+    Let $\rvx$ come from a distribution. $\rvx$ is composed of two independent variables $\rvx_\rvd$ and $\rvx_\rvy$, where $\rvx_\rvd$ is a set of domain features as per definition \ref{definedomainfeatures}. Let $\rvd$ be a domain label random variable generated from the labeling function $f_\rvd(\rvx_\rvd)$. In the single-domain training setting, $f_\rvd(\rvx_\rvd) = \rvd_1$ for all $\rvx$ in the training set, where $\rvd_1$ is a constant domain value. Let $\rvy$ be a class label generated from $f_\rvy(\rvx_\rvd, \rvx_\rvy) = \rvy$. Let $\rvz$ be any sufficient representation of $\rvx$ for $\rvy$ that satisfies the sufficiency definition \ref{definesuff} and minimizes the loss function $\mathcal{L} = I(\rvx_\rvd \rvx_\rvy; \rvz) - \beta I(\rvz;\rvy)$. The possible $\rvz$ that minimizes $\mathcal{L}$ and is sufficient must meet the condition $I(\rvx_\rvd; \rvz) = 0$.
+
+
+
+    \label{mainbodygenloss}
+\end{theorem}
+
+\begin{remark}
+\textbf{Significance.} Theorem \ref{mainbodygenloss} is non-trivial, requiring: (1) decomposing mutual information under independence constraints, (2) analyzing the optimization landscape, (3) establishing sufficiency conditions, and (4) proving all alternatives violate sufficiency or have higher loss. Critically, the optimization process itself -- not architecture or hyperparameters -- guarantees domain feature loss, explaining why state-of-the-art methods struggle with out-of-domain detection.
+\end{remark}
+
+Detailed proof is in Appendix \ref{genloss}. Intuitively, the minimal sufficient representation cannot encode information independent of the learning objective. Since $\rvx_\rvd$ is independent of class features, compression discards domain features. The model learns $\hat{\rvy} = g(\rvx_\rvy)$ instead of the desired $\hat{\rvy} = g(\rvx_\rvd, \rvx_\rvy)$ because $\rvx_\rvd$ is not predictive of class in the training data. For example, a model might classify "Barney" (a purple cartoon character) as a dinosaur, ignoring that it is purple.
+
+While full compression may not occur in practice \citep{tishby2015deep}, Fano's Inequality (Appendix \ref{fano}) extends our theory to partial compression, showing that even small $I(\rvx_\rvd; \rvz)$ leads to unreliable OOD detection. Fano's inequality also allows interpreting our experimental results as establishing a lower bound on $I(\rvx_\rvd; \rvz)$: high separation performance (low FPR@95) implies high $I(\rvx_\rvd; \rvz)$, while poor performance implies low $I(\rvx_\rvd; \rvz)$. This quantifies information loss in supervised representations.
+
+\subsection{Limitations of Current Solutions}
+
+We analyze several alternative approaches to addressing domain feature collapse, demonstrating both theoretically and empirically why they are insufficient. Importantly, our experimental setup (Section \ref{sec:experiments}) directly evaluates several of these alternatives, providing concrete evidence of their limitations.
+
+\paragraph{Fine Tuning Pretrained Models.} Methods like Energy \citep{liu2020energy} and MOS \cite{huang2021mos} fine-tune pretrained models on ID data. While pretrained models initially contain diverse domain features from multi-domain pretraining, fine-tuning on single-domain data reintroduces domain feature collapse through catastrophic forgetting \cite{mccloskey1989catastrophic}. Our experiments directly test this approach: both CE DinoV2 and CE Resnet (Section \ref{sec:experiments}) fine-tune pretrained models (DinoV2 ViTs14 and ImageNet-pretrained ResNet50, respectively) on single-domain datasets. Table \ref{tab:summary} shows that despite starting from pretrained weights, these models still exhibit poor out-of-domain OOD detection (e.g., CE Resnet achieves 38.9\% FPR@95 on out-of-domain OOD vs. 61.8\% on in-domain OOD). This empirically confirms that fine-tuning alone cannot prevent domain feature collapse, as the supervised objective on single-domain data drives the model toward $I(\rvx_\rvd; \rvz) = 0$ regardless of initialization.
+
+\paragraph{Pretrained Models Without Fine-Tuning.} Zero-shot methods using CLIP \cite{radford2021learning,esmaeilpour2022zero} or other pretrained models preserve $I(\rvx_\rvd;\rvz) > 0$ by avoiding supervised training on single-domain data. However, they struggle with in-domain OOD detection because they lack class-specific features $\rvx_\rvy$ for the narrow domain. \cite{yangcan} demonstrates that pretrained models fail on the adjacent OOD benchmark (in-domain but OOD samples) when pretraining and deployment domains differ significantly. Our PT KNN baseline (Table \ref{tab:summary}) validates this limitation: while achieving excellent out-of-domain detection (0.9\% FPR@95), it performs poorly on in-domain OOD (79.7\% FPR@95). This represents the opposite failure mode from supervised models -- high $I(\rvx_\rvd; \rvz)$ but insufficient $I(\rvx_\rvy; \rvz)$ for class discrimination. The fundamental issue is that a single representation space cannot simultaneously maximize both $I(\rvx_\rvd; \rvz)$ (for domain detection) and $I(\rvx_\rvy; \rvz)$ (for class-based OOD detection) when trained on single-domain data.
+
+\paragraph{Unsupervised OOD Detection.} Methods using autoencoders \cite{zhou2022rethinking}, contrastive learning \cite{sehwag2021ssd}, or diffusion models \cite{liu2023unsupervised} may preserve $I(\rvx_\rvd;\rvz) > 0$ by avoiding supervised objectives. However, they face two critical limitations. First, they require domain-specific adaptation and hyperparameter tuning, as reconstruction quality or contrastive similarity depends heavily on domain characteristics (e.g., what constitutes a good reconstruction for medical images differs from satellite imagery). Second, and more fundamentally, they struggle with in-domain OOD detection. \cite{yangcan} shows that unsupervised methods fail on the adjacent OOD benchmark because they lack class-discriminative features -- samples from novel in-domain classes may have similar reconstruction errors or contrastive similarities to ID samples. While these methods may excel at detecting out-of-domain samples (where domain features differ), they cannot reliably detect in-domain OOD samples without class-specific information.
+
+\paragraph{Auxiliary Loss Functions.} Auxiliary losses (e.g., rotation prediction \citep{gidaris2018unsupervised}, contrastive objectives \citep{khosla2020supervised}) could theoretically preserve domain features by encouraging the model to learn representations beyond class prediction. Our experiments test this approach using SC Resnet (Section \ref{sec:experiments}), which trains from scratch with supervised contrastive learning \citep{khosla2020supervised} rather than standard cross-entropy. Table \ref{tab:summary} shows that SC Resnet still suffers from poor out-of-domain detection (32.9\% FPR@95 with KNN), demonstrating that auxiliary losses alone are insufficient. The fundamental problem is that auxiliary losses are domain-specific: features useful for one domain (e.g., rotation invariance for natural images) may be irrelevant or harmful for another (e.g., medical images where orientation is diagnostically significant). Moreover, when the auxiliary task and supervised task conflict, the supervised objective typically dominates during optimization, leading to domain feature collapse. Without explicit architectural separation of representation spaces, auxiliary losses cannot guarantee $I(\rvx_\rvd; \rvz) > 0$ while maintaining high $I(\rvx_\rvy; \rvz)$.
+
+\subsection{Domain Filtering: A Solution}
+\label{sec:domain_filtering}
+
+\paragraph{Design Rationale.} Our theorem reveals supervised training on single-domain data inevitably produces $I(\rvx_\rvd; \rvz) = 0$. The solution lies in the \emph{representation space} itself: using pretrained models (trained on diverse multi-domain data) to preserve domain information that supervised training discards. This is an architectural insight -- we use \emph{distinct representation spaces} for different detection tasks: pretrained features for domain filtering (preserving $I(\rvx_\rvd; \rvz) > 0$) and supervised features for class-based OOD detection (maximizing $I(\rvx_\rvy; \rvz)$), combining their complementary strengths.
+
+\subsubsection{Two Stage Detector: Domain Filtering + OOD Detector}
+
+We use a two-stage process: (1) a pretrained network determines if a sample is in-domain, (2) an OOD detector determines if in-domain samples are in-distribution. This assumes no in-distribution sample is out-of-domain, consistent with our definitions. \textbf{Crucially, each stage operates in a distinct representation space}: the first stage uses pretrained features (preserving $I(\rvx_\rvd; \rvz) > 0$) while the second stage uses supervised features (optimized for class discrimination). This is not simply running the same detector twice, but rather leveraging complementary representation spaces.
+
+\paragraph{Implementation.} We use a KNN-based domain filter (similar to \cite{sun2022out}), but the novelty is the \emph{framework}: domain filtering must operate in a representation space preserving $I(\rvx_\rvd; \rvz) > 0$, which supervised representations cannot provide. Specifically, the domain filter computes KNN distances in the \emph{pretrained DinoV2 feature space}, while the second-stage OOD detector operates in the \emph{supervised model's feature space}. We calibrate the threshold $\rvt_\rvd$ such that $P(f_{knn}(\{\rvx \in \sX_{train}\}) \leq \rvt_\rvd) = p$ with $p = 0.99$ and $K = 50$, flagging samples with $f_{knn} > \rvt_d$ as OOD. See Algorithm \ref{twostage} in Appendix \ref{twostageapp}. We also test $p \in \{0.98, 0.999\}$ following OpenOOD's hyperparameter tuning. We demonstrate domain filtering with three second-stage detectors (Mahalanobis, KNN, ReAct), though the framework theoretically works with any OOD detector.
+
+\subsubsection{Adjacent, Near, and Far OOD Benchmarks}
+\label{adjacentnearfar}
+
+Standard benchmarks distinguish near OOD (semantically different but visually similar) from far OOD (both semantically and visually dissimilar) \citep{fort2021exploring,yang2022openood,zhang2023openood}. For single-domain ID data (e.g., X-rays), both near and far OOD are out-of-domain, and the domain filter detects them effectively.
+
+In contrast, the adjacent OOD benchmark \citep{yangcan} tests \emph{in-domain} OOD samples by training on a subset of classes (e.g., 2/3) and evaluating on held-out classes (1/3) from the same dataset. These held-out classes share domain features $\rvx_\rvd$ (e.g., satellite imagery classes "Forest" and "River" share domain features with training classes "Residential" and "Industrial"). This isolates in-domain OOD samples, which are safety-critical as unknown classes from the same domain may appear in deployment. The domain filter alone performs poorly on adjacent OOD as samples are correctly identified as in-domain, necessitating the second-stage detector.
+
+\subsubsection{Ensembling vs Filtering}
+
+Ensemble methods have been used in uncertainty estimation and OOD detection before, such as \citep{lakshminarayanan2017simple} and \citep{pmlr-v235-xu24ae}. However, any ensemble would have to contend with a large performance gap between the two models. If we assume that the secondary model is good at out-of-domain OOD, its score would be dragged down by the primary model, which would be worse at out-of-domain OOD. Similarly, the primary model would be dragged down on in-domain OOD by the secondary model. 
+
+Domain filtering significantly reduces the negative impacts of ensembling by allowing the correct model to dominate the OOD score based on the domain of the sample. This allows us to maintain good in-domain OOD detection performance by limiting our negative impact on the primary model. 
+

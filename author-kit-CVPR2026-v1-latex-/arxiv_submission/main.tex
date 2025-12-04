@@ -1,0 +1,57 @@
+% CVPR 2026 Paper Template; see https://github.com/cvpr-org/author-kit
+
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+%%%%%%%%% PAPER TYPE  - PLEASE UPDATE FOR FINAL VERSION
+% \usepackage{cvpr}              % To produce the CAMERA-READY version
+% \usepackage[review]{cvpr}      % To produce the REVIEW version
+\usepackage[pagenumbers]{cvpr} % To force page numbers, e.g. for an arXiv version
+
+% Import additional packages in the preamble file, before hyperref
+\input{preamble}
+
+% It is strongly recommended to use hyperref, especially for the review version.
+% hyperref with option pagebackref eases the reviewers' job.
+% Please disable hyperref *only* if you encounter grave issues, 
+% e.g. with the file validation for the camera-ready version.
+%
+% If you comment hyperref and then uncomment it, you should delete *.aux before re-running LaTeX.
+% (Or just hit 'q' on the first LaTeX run, let it finish, and you should be clear).
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+
+%%%%%%%%% PAPER ID  - PLEASE UPDATE (Not needed for arXiv)
+% \def\paperID{*****} % *** Enter the Paper ID here
+% \def\confName{CVPR}
+% \def\confYear{2026}
+
+%%%%%%%%% TITLE - PLEASE UPDATE
+\title{Domain Feature Collapse: Implications for Out-of-Distribution Detection and Solutions}
+
+%%%%%%%%% AUTHORS - PLEASE UPDATE
+\author{Hong Yang, Devroop Kar, Qi Yu, Alex Ororbia, Travis Desell\\
+Rochester Institute of Technology\\
+1 Lomb Memorial Dr, Rochester, NY 14623, US\\
+{\tt\small hy3134@rit.edu}
+}
+
+\begin{document}
+\maketitle
+\input{sec_0_abstract}
+\input{sec_1_intro}
+\input{sec_5_related_work}
+\input{sec_2_preliminaries}
+\input{sec_3_methodology}
+\input{sec_4_experiments}
+\input{sec_5a_discussion}
+\input{sec_6_conclusion}
+{
+    \small
+    \bibliographystyle{ieeenat_fullname}
+    \bibliography{main}
+}
+
+% Appendix
+\input{sec_appendix}
+
+\end{document}

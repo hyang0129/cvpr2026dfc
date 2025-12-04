@@ -1,0 +1,24 @@
+\section{Introduction}
+\label{sec:intro}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{domain_feature_collapse.jpg}
+  \caption{Domain Feature Collapse: Supervised learning on single-domain data inevitably produces representations where domain information is lost ($I(\rvx_\rvd; \rvz) = 0$). This leads to catastrophic failure in OOD detection, as models cannot distinguish between in-domain and out-of-domain samples without domain-specific features.}
+  \label{fig:domain_collapse}
+\end{figure}
+
+State-of-the-art OOD detection methods demonstrate strong performance on established benchmarks \citep{zhang2023openood}, yet these benchmarks almost exclusively use multi-domain in-distribution (ID) sets such as CIFAR10/100 \citep{cifar10} and ImageNet \citep{deng2009imagenet}. When evaluated on single-domain datasets -- such as medical imaging \citep{zhang2021out}, satellite imagery \citep{ekim2024distribution}, or agriculture \citep{saadati2024out} -- these same methods exhibit catastrophic failure on out-of-domain OOD detection. For instance, models trained on medical images achieve only 53\% FPR@95 when detecting MNIST \citep{lecun1998gradient} digits as OOD, despite MNIST being trivially distinguishable from medical images. \textbf{Why does this failure occur, and what does it reveal about representation learning?}
+
+We identify and formally characterize the root cause: \textbf{domain feature collapse}. We provide the first theoretical proof that supervised learning on single-domain data inevitably produces representations with $I(\rvx_\rvd; \rvz) = 0$, where $\rvx_\rvd$ represents domain features and $\rvz$ the learned representation. This counterintuitive result -- better class-specific optimization necessarily leads to worse domain robustness -- is a mathematically inevitable consequence of information bottleneck optimization. Models learn to rely solely on class-specific features while discarding domain-specific features (e.g., knowing an image is an X-ray helps OOD detection but not disease classification). Critically, this failure mode rarely manifests in multi-domain ID sets, explaining why it has been overlooked in standard benchmarks.
+
+Our theoretical contribution is validated empirically through Domain Bench, a benchmark covering diverse single-domain datasets, and domain filtering, a controlled experimental framework that demonstrates preserving $I(\rvx_\rvd; \rvz) > 0$ resolves the failure mode. While domain filtering itself is conceptually simple (using pretrained models to retain domain information), its effectiveness serves as strong evidence for our information-theoretic explanation of the phenomenon.
+
+Our key contributions are:
+\begin{itemize}
+\item \textbf{Theoretical Characterization}: We prove that single-domain supervised learning inevitably leads to $I(\rvx_\rvd; \rvz) = 0$ under information bottleneck optimization, providing the first formal explanation for catastrophic out-of-domain OOD detection failure in single-domain settings. We extend this using Fano's inequality to quantify partial collapse in practical scenarios, establishing a connection between OOD detection performance and information-theoretic bounds.
+
+\item \textbf{Empirical Validation}: We demonstrate that preserving $I(\rvx_\rvd; \rvz) > 0$ through domain filtering (using pretrained representations) resolves the failure mode, confirming our theoretical predictions. While domain filtering itself is conceptually straightforward, its effectiveness serves as strong evidence for our information-theoretic framework and reveals when pretrained models should be fine-tuned versus frozen.
+
+\item \textbf{Benchmark}: We introduce Domain Bench with multiple single-domain datasets (medical imaging, agriculture, satellite imagery) to systematically evaluate the domain feature collapse phenomenon and validate our theoretical predictions\footnote{see supplementary material for anonymized repository}.
+\end{itemize}

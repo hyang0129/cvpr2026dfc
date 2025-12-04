@@ -1,0 +1,7 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+In this paper, for the problem of out-of-distribution (OOD) detection, we have theoretically proven the existence of a phenomenon that we label as domain feature collapse, establishing that supervised learning on single-domain data inevitably produces representations with $I(\rvx_\rvd; \rvz) = 0$. Furthermore, we empirically demonstrated its existence through experimental simulation across a wide variety of single domain datasets. Notably, we introduced a new benchmark for evaluating OOD detectors in the under-explored single domain setting, including diverse data such as medical imaging, agriculture, and satellite imagery.
+
+Our solution represents a paradigm shift in OOD detection: rather than developing better algorithms, we address the root cause by using representation spaces that preserve domain information. Domain filtering is a method-agnostic framework—an architectural insight rather than an algorithmic contribution—that works consistently across diverse base detectors. This shifts the field's focus from "better OOD detection algorithms" to "better representation spaces for OOD detection," addressing root causes rather than symptoms. We hope that this effort encourages further study into single domain out-of-distribution detection and improvements in AI safety.
+
